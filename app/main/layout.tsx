@@ -1,5 +1,7 @@
-import { RoomList, RoomListItem } from "@/components/RoomList"
+'use client'
 import Script from "next/script"
+import { RecoilRoot } from "recoil"
+import Background from "@/components/Background"
 
 export default function Layout({
   children,
@@ -7,17 +9,9 @@ export default function Layout({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex justify-between items-center w-screen h-screen">
-      <Script src="/public/browser-matrix.js" />
-      
-      <RoomList >
-        {
-          ['234', '234', 'hello', 'terve', 'budrour', 'guten tag'].map((item) => {
-            return <RoomListItem key={item} name={item} />
-          })
-        }
-      </RoomList>
-      {children}
-    </div>
+    <RecoilRoot>
+      <Background />
+      <div className=" z-10">{children}</div>
+    </RecoilRoot>
   )
 }

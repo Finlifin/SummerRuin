@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export function RoomList({ children }: { children?: ReactNode }) {
     return (
-        <motion.div className="bg-[#19191d] w-[15vw] h-full">
+        <motion.div className="flex-center items-center justify-center roomlist near-block">
             {children}
         </motion.div>
     )
@@ -13,7 +13,7 @@ export function RoomList({ children }: { children?: ReactNode }) {
 export function RoomListItem({ name }: { name?: string }) {
     const variants = {
         hover: {
-            backgroundColor: '#224334',
+            backgroundColor: '#00000030',
             transition: {
                 duration: '.2'
             }
@@ -24,7 +24,10 @@ export function RoomListItem({ name }: { name?: string }) {
         <motion.div
             variants={variants}
             whileHover={'hover'}
-            className="h-max m-2 text-white bg-[#22212a] rounded-md p-2 text-lg text-start hover:cursor-pointer">
+            className="h-max w-[88%] mx-3 my-2 text-white text-clip rounded-md p-2 text-lg text-start hover:cursor-pointer "
+            style={{
+                color: '#A1608C'
+            }}>
             Room: {name}
         </motion.div>
     )

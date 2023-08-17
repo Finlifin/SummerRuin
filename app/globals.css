@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  font-family: 'noto sans';
+}
+
 body {
   width: 100vw;
   height: 100vh;
@@ -23,4 +27,34 @@ body {
 .placeholder::placeholder {
   color: white;
   opacity: 0.5;
+}
+
+.main-room {
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.text-input {
+  grid-row: 2;
+}
+
+.roomlist {
+  grid-column: 1;
+}
+
+.messages {
+  grid-row: 1;
+}
+
+.text-input::placeholder {
+  color: black;
+}
+
+.near-block {
+  border-radius: 8px;
+  background-color: none;
+  backdrop-filter: blur(18px);
+  box-shadow: 4px 4px 15px 0px rgba(0, 0, 0, 0.487);
 }
