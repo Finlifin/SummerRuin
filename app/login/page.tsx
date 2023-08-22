@@ -37,6 +37,8 @@ function Page() {
                 localStorage.setItem("baseUrl", baseUrl)
                 localStorage.setItem("userId", `@${userName}:${baseUrl}`)
                 localStorage.setItem("accessToken", data.access_token)
+                localStorage.setItem("password", password)
+                localStorage.setItem("userName", userName)
                 router.push("/main")
             })
     }

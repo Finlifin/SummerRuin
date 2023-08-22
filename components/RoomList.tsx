@@ -18,12 +18,16 @@ export function RoomListItem({ name }: { name?: string }) {
                 duration: '.2'
             }
         },
+        tap: {
+            scale: 0.95
+        }
     }
 
     return (
         <motion.div
             variants={variants}
-            whileHover={'hover'}
+            whileHover={"hover"}
+            whileTap={"tap"}
             className="h-max w-[88%] mx-3 my-2 text-white text-clip rounded-md p-2 text-lg text-start hover:cursor-pointer "
             style={{
                 color: '#A1608C'
