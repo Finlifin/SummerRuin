@@ -5,20 +5,18 @@ import Lint from '@/components/Lint'
 import Input_ from '@/components/Input_'
 import Button_ from '@/components/Button_'
 import { useRouter } from 'next/navigation'
+import * as sdk from 'matrix-js-sdk'
 
 const baseUrl = "http://localhost:8008"
+var client: sdk.MatrixClient
 
 function Page() {
-    const [client, setClient] = useState<any>(null)
-    const [some, setSome] = useState<any>(null)
-    const homeserver = useRef()
-    const [userName, setUserName] = useState("alice");
+    const [userName, setUserName] = useState("alice")
     const [password, setPassword] = useState("11111111")
+    const [homeServer, setHomeServer] = useState(baseUrl)
+    const [isSignIn, setSignIn] = useState<Boolean>(true)
     const router = useRouter()
 
-    const translateUserId = () => {
-        "hello"
-    }
 
     const checkLoginInfo = () => {
         fetch("http://localhost:8008/_matrix/client/v3/login", {
@@ -32,26 +30,56 @@ function Page() {
                 },
                 password: password
             })
-        }).then((response) => response.json())
+        })
+            .then((response) => response.json())
             .then((data: any) => {
-                localStorage.setItem("baseUrl", baseUrl)
-                localStorage.setItem("userId", `@${userName}:${baseUrl}`)
+                if (data.error) { alert(data.error); return }
+
+                localStorage.setItem("baseUrl", homeServer)
+                localStorage.setItem("userId", `@${userName}:${homeServer}`)
                 localStorage.setItem("accessToken", data.access_token)
+                localStorage.setItem("password", password)
+                localStorage.setItem("userName", userName)
+                router.push("/main")
+            })
+            .catch(reason => console.log(reason))
+    }
+
+    const tryRegister = () => {
+        if (password.length < 8) { return }
+
+        client = sdk.createClient({ baseUrl: homeServer })
+        fetch("http://localhost:8008/_matrix/client/v3/register", {
+            mode: 'cors',
+            method: 'POST',
+            body: JSON.stringify({
+                // type: "m.register.password",
+                auth: {},
+                user: userName,
+                password: password
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) { alert(data.error); return }
+
+                localStorage.setItem("baseUrl", homeServer)
+                localStorage.setItem("userId", `@${userName}:${homeServer}`)
+                localStorage.setItem("accessToken", data.access_token || "")
                 localStorage.setItem("password", password)
                 localStorage.setItem("userName", userName)
                 router.push("/main")
             })
     }
 
-    const [isSignIn, setSignIn] = useState<Boolean>(true)
     return (
         isSignIn ?
             <AnimatePresence>
                 <div className="flex-col justify-center items-center w-max h-max m-auto" >
                     <div className="my-5 text-center font-sans title text-shadow">login</div>
-                    <Input_ type="text" placeholder="User Name" value={"alice"} />
-                    <Input_ type="password" placeholder="Password" value={"11111111"} />
-                    <Input_ type="text" placeholder="Home Server" value={baseUrl} />
+                    <Input_ type="text" placeholder="User Name" defaultValue="alice" value={userName} onChange={(event: any) => { setUserName(event.target.value) }} />
+                    <Input_ type="password" placeholder="Password" defaultValue="11111111" value={password} onChange={(event: any) => setPassword(event.target.value)} />
+                    <Input_ type="text" placeholder="Home Server" defaultValue={baseUrl} value={homeServer} onChange={(event: any) => setHomeServer(event.target.value)} />
                     <Button_ onClick={checkLoginInfo}>Continue</Button_>
                     <Lint onClick={() => setSignIn(() => !isSignIn)}>Or create one</Lint>
                 </div>
@@ -61,11 +89,11 @@ function Page() {
                 <div className="flex-col justify-center items-center w-max h-max m-auto" >
                     <div className="my-5 text-center font-sans title text-shadow">register</div>
 
-                    <Input_ type="text" placeholder="Email" />
-                    <Input_ type="password" placeholder="Password" />
-                    <Input_ type="text" placeholder="Home Server" value={baseUrl} />
+                    <Input_ type="text" placeholder="User Name" defaultValue="alice" value={userName} onChange={(event: any) => setUserName(event.target.value)} />
+                    <Input_ type="password" placeholder="Password" defaultValue="11111111" value={password} onChange={(event: any) => setPassword(event.target.value)} />
+                    <Input_ type="text" placeholder="Home Server" defaultValue={baseUrl} value={homeServer} onChange={(event: any) => setHomeServer(event.target.value)} />
 
-                    <Button_>Continue</Button_>
+                    <Button_ onClick={() => tryRegister()}>Continue</Button_>
                     <Lint onClick={() => setSignIn(() => !isSignIn)}>Or login</Lint>
                     <Button_>register</Button_>
                 </div>

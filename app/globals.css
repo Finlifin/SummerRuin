@@ -63,6 +63,14 @@ body {
   /* bottom: 0;
   left: 0; */
   width: 300px;
+  aspect-ratio: 1/1;
   background: #fff;
-  z-index: 999;
+  z-index: 99999999;
+}
+
+code {
+  background-color: #1c1b2233;
+  padding: 0.5rem;
+  border-radius: 8px;
+  margin-top: 0.4rem;
 }
