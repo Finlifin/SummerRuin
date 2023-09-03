@@ -9,7 +9,7 @@ import { Room } from "matrix-js-sdk";
 export function RoomList({ onClick }: { onClick: MouseEventHandler }) {
     const rooms = useRecoilValue(roomsState)
     return (
-        <motion.div className="flex-center items-center justify-center roomlist near-block" onClick={onClick}>
+        <motion.div className="flex-center items-center justify-center roomlist near-block" onClick={(e) => { onClick(e); console.log(rooms) }}>
             {rooms.map((x) => <RoomListItem room={x} key={x.roomId} />)}
         </motion.div>
     )
@@ -19,7 +19,7 @@ export function RoomListItem({ room }: { room?: Room }) {
     const allTheMessages = useRecoilValue(allMessagesState)
     const [msgs_now, setMsgsNow] = useRecoilState(messagesState)
     const [roomNowId, setRoomNowId] = useRecoilState(roomNow)
-    
+
     const variants = {
         hover: {
             backgroundColor: '#00000030',

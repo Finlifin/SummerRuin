@@ -3,7 +3,7 @@ import { motion } from "framer-motion"
 import { ReactNode, useEffect, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown"
 import * as Katex from "react-katex"
-import { MatrixEvent, getHttpUriForMxc } from "matrix-js-sdk"
+import { MatrixEvent, Room, getHttpUriForMxc } from "matrix-js-sdk"
 import 'katex/dist/katex.min.css'
 import CharAvattar from "./CharAvatar"
 import { useRecoilState } from "recoil"
@@ -79,17 +79,83 @@ export function Message({ data }: { data: MatrixEvent }) {
     const Popup = () => {
         const popupMotion = {}
 
+        const copyMessageContent = async () => {
+            navigator.clipboard.writeText(content?.body)
+        }
+        const revocateEvent = () => {
+            let currentRoom = new Room(
+                data.getRoomId() || "",
+                gClient,
+                gClient.getUserId() || ""
+            )
+            console.log(
+                currentRoom.removeEvent(data.event.event_id || "")
+            )
+        }
+
+        const MenuItem = ({ itemName, onClick }: { itemName: string, onClick: any }) => {
+            const variants = {
+                open: {
+                    y: 0,
+                    opacity: 1,
+                    transition: {
+                        y: { stiffness: 1000, velocity: -100 }
+                    }
+                },
+                closed: {
+                    y: 50,
+                    opacity: 0,
+                    transition: {
+                        y: { stiffness: 1000 }
+                    }
+                }
+            }
+            const style = {
+                background: '#ffffff33',
+                border: 'solid #ffffff35 1px'
+            }
+            return (
+                <motion.div
+                    variants={variants}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onMouseDown={onClick}
+                >
+                    <div className="px-3 py-2 shadow-sm rounded-md my-1 hover:cursor-pointer " style={style}>{itemName}</div>
+                </motion.div>
+            )
+        };
+
+
         return (
             <motion.div
+                className="rounded p-4"
+                initial={false}
+                animate={{
+                    x: 200,
+                    transition: {
+                        duration: 0.4,
+                        type: 'tween'
+                    }
+                }}
                 style={{
                     position: 'fixed',
                     top: `${y}px`,
                     left: `${x}px`,
-                    zIndex: 999999
+                    zIndex: 999999,
+                    background: '#00000033',
+                    backdropFilter: 'blur(18px)'
+
                     // background: 'black',
-                    
+
                 }}>
-                {['asf', 'sdf', 'sdfsdf'].map((k) => <div key={k}>{k}</div>)}
+                <MenuItem itemName="Revocation the message" key={1} onClick={() => { revocateEvent() }} />
+                {msgtype === "m.text" && <MenuItem itemName="Copy the messaage content" key={2} onClick={async () => {
+                    await copyMessageContent()
+                }} />}
+                {/* {msgtype === "m.text" && <MenuItem itemName="Copy content" key={3} onClick={() => { }} />}
+                {msgtype === "m.text" && <MenuItem itemName="Copy content" key={4} onClick={() => { }} />}
+                {msgtype === "m.text" && <MenuItem itemName="Copy content" key={5} onClick={() => { }} />} */}
             </motion.div>
         )
     }
@@ -102,13 +168,11 @@ export function Message({ data }: { data: MatrixEvent }) {
             whileHover={"hover"}
             whileTap={"tap"}
             onClick={(event) => {
-                setX(() => event.movementX)
-                setY(() => event.movementY)
-                setPopup(true)
+                // setX(() => event.clientX)
+                // setY(() => event.clientY)
+                setPopup(() => !popup)
             }}
-            onBlur={() => {
-                setPopup(false)
-            }}
+            onBlur={() => setPopup(false)}
         >
             <div className="flex items-center"><CharAvattar name={data.sender?.name} />{data.sender?.name}</div>
             {
